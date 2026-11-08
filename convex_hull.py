@@ -1,8 +1,41 @@
+import os
+import random
+import sys
 import time
+
+import andrew
+import divide_conquer
+import view
+
+
+FILES = [
+    "rand1k.txt",
+    "rand2k.txt",
+    "rand4k.txt",
+    "rand8k.txt",
+    "rand16k.txt",
+    "rand32k.txt",
+    "rand64k.txt",
+    "circle1k.txt",
+    "circle2k.txt",
+    "circle4k.txt",
+    "circle8k.txt",
+    "circle16k.txt",
+    "circle32k.txt",
+    "circle64k.txt",
+]
+
+
+def hull_dir():
+    if getattr(sys, "frozen", False):
+        base = sys._MEIPASS
+    else:
+        base = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base, "data", "hull")
 
 
 def read_points(filename):
-    file = open(filename, 'r')
+    file = open(filename, "r")
     lines = file.readlines()
     points = []
     for line in lines[2:]:
@@ -12,44 +45,56 @@ def read_points(filename):
     return points
 
 
-def run_hull_and_print_time(filename_or_points):
-    if type(filename_or_points) is str:
-        filename = filename_or_points
-        points = read_points(filename)
-        start = time.time()
-        convex_hull(points)
-        end = time.time()
-        print(filename + ':', end - start, 's')
+def run_hull_and_print_time(filename, hull_fn):
+    points = read_points(filename)
+    start = time.time()
+    hull_fn(points)
+    end = time.time()
+    print("data/hull/" + os.path.basename(filename) + ":", end - start, "s")
+
+
+def demo_points():
+    rng = random.Random(1)
+    return [(rng.uniform(-1, 1), rng.uniform(-1, 1)) for _ in range(10)]
+
+
+def ask(valid):
+    while True:
+        choice = input("> ").strip()
+        if choice in valid:
+            return choice
+        print("Bitte " + " oder ".join(sorted(valid)) + " eingeben.")
+
+
+def main():
+    print("Algorithmus:")
+    print("  1  Andrew")
+    print("  2  Divide and Conquer")
+    algo = ask({"1", "2"})
+
+    print("Ausgabe:")
+    print("  1  Konsole")
+    print("  2  visuell")
+    mode = ask({"1", "2"})
+
+    if algo == "1":
+        hull_fn = andrew.hull
+        steps_fn = andrew.hull_steps
+        title = "Andrew"
     else:
-        points = filename_or_points
-        start = time.time()
-        points = convex_hull(points)
-        end = time.time()
-        return points
+        hull_fn = divide_conquer.hull
+        steps_fn = divide_conquer.hull_steps
+        title = "Divide and Conquer"
 
-
-def convex_hull(points):
-
-    # TODO: Hüllenalgorithmus hier implementieren
-
-    return points
+    if mode == "1":
+        print("Hülle:")
+        folder = hull_dir()
+        for name in FILES:
+            run_hull_and_print_time(os.path.join(folder, name), hull_fn)
+    else:
+        points = demo_points()
+        view.play(points, steps_fn(points), title)
 
 
 if __name__ == "__main__":
-
-    print('Hülle:')
-    run_hull_and_print_time('data/hull/rand1k.txt')
-    run_hull_and_print_time('data/hull/rand2k.txt')
-    run_hull_and_print_time('data/hull/rand4k.txt')
-    run_hull_and_print_time('data/hull/rand8k.txt')
-    run_hull_and_print_time('data/hull/rand16k.txt')
-    run_hull_and_print_time('data/hull/rand32k.txt')
-    run_hull_and_print_time('data/hull/rand64k.txt')
-
-    run_hull_and_print_time('data/hull/circle1k.txt')
-    run_hull_and_print_time('data/hull/circle2k.txt')
-    run_hull_and_print_time('data/hull/circle4k.txt')
-    run_hull_and_print_time('data/hull/circle8k.txt')
-    run_hull_and_print_time('data/hull/circle16k.txt')
-    run_hull_and_print_time('data/hull/circle32k.txt')
-    run_hull_and_print_time('data/hull/circle64k.txt')
+    main()
