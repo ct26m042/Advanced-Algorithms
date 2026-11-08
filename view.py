@@ -27,7 +27,7 @@ def play(points, steps, title):
 
         screen.fill((24, 28, 36))
         if steps:
-            text, highlights, lines = steps[index]
+            text, highlights, lines, dashed = steps[index]
             prefix = str(index + 1) + "/" + str(len(steps)) + "  "
             if index == len(steps) - 1:
                 prefix = prefix + "fertig  "
@@ -35,7 +35,9 @@ def play(points, steps, title):
             text = "keine Schritte"
             highlights = []
             lines = []
+            dashed = []
             prefix = ""
+        _draw_dashed(screen, points, dashed)
         _draw_lines(screen, points, lines)
         _draw_points(screen, points, highlights)
         label = font.render(prefix + text, True, (236, 236, 236))
@@ -61,6 +63,49 @@ def _to_screen(point, bounds):
     x = PAD + (point[0] - min_x) / span_x * (WIDTH - 2 * PAD)
     y = HEIGHT - PAD - (point[1] - min_y) / span_y * (HEIGHT - 2 * PAD - 28)
     return int(x), int(y)
+
+
+def _draw_dashed(screen, points, lines):
+    import pygame
+
+    if not points:
+        return
+    bounds = _bounds(points)
+    for chain in lines:
+        if len(chain) < 2:
+            continue
+        mapped = [_to_screen(point, bounds) for point in chain]
+        for start, end in zip(mapped, mapped[1:]):
+            _dash(screen, start, end, (214, 126, 112))
+
+
+def _dash(screen, start, end, color):
+    import pygame
+
+    x1, y1 = start
+    x2, y2 = end
+    dx = x2 - x1
+    dy = y2 - y1
+    length = (dx * dx + dy * dy) ** 0.5
+    if length < 1:
+        return
+    ux = dx / length
+    uy = dy / length
+    dist = 0
+    draw = True
+    while dist < length:
+        seg = 8 if draw else 6
+        seg = min(seg, length - dist)
+        if draw:
+            pygame.draw.line(
+                screen,
+                color,
+                (int(x1 + ux * dist), int(y1 + uy * dist)),
+                (int(x1 + ux * (dist + seg)), int(y1 + uy * (dist + seg))),
+                2,
+            )
+        dist += seg
+        draw = not draw
 
 
 def _draw_lines(screen, points, lines):

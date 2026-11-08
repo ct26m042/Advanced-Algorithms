@@ -91,6 +91,10 @@ def main():
         folder = hull_dir()
         for name in FILES:
             run_hull_and_print_time(os.path.join(folder, name), hull_fn)
+        try:
+            input("Enter zum Schließen...")
+        except EOFError:
+            pass
     else:
         points = demo_points()
         view.play(points, steps_fn(points), title)

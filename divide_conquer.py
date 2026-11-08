@@ -3,23 +3,23 @@ def cross(origin, a, b):
 
 
 def hull(points):
-    return _divide(sorted(set(points)), None)
+    return _divide(sorted(set(points)), None, None)
 
 
 def hull_steps(points):
     steps = []
-    _divide(sorted(set(points)), steps)
+    _divide(sorted(set(points)), steps, [])
     return steps
 
 
-def _divide(pts, steps):
+def _divide(pts, steps, rejected):
     if len(pts) <= 3:
         return _small(pts)
 
     mid = len(pts) // 2
-    left = _divide(pts[:mid], steps)
-    right = _divide(pts[mid:], steps)
-    return _merge(left, right, steps)
+    left = _divide(pts[:mid], steps, rejected)
+    right = _divide(pts[mid:], steps, rejected)
+    return _merge(left, right, steps, rejected)
 
 
 def _small(pts):
@@ -40,16 +40,16 @@ def _closed(chain):
     return list(chain)
 
 
-def _merge(left, right, steps):
+def _merge(left, right, steps, rejected):
     if not left:
         return right
     if not right:
         return left
     if steps is not None:
-        steps.append(("Teilung", [], [_closed(left), _closed(right)]))
+        steps.append(("Teilung", [], [_closed(left), _closed(right)], list(rejected)))
 
-    upper_i, upper_j = _tangent(left, right, True, steps)
-    lower_i, lower_j = _tangent(left, right, False, steps)
+    upper_i, upper_j = _tangent(left, right, True, steps, rejected)
+    lower_i, lower_j = _tangent(left, right, False, steps, rejected)
 
     merged = []
     i = upper_i
@@ -65,10 +65,27 @@ def _merge(left, right, steps):
             break
         j = (j + 1) % len(right)
 
-    result = _drop_collinear(merged)
+    if rejected is not None:
+        rejected.extend(_walk_edges(left, lower_i, upper_i))
+        rejected.extend(_walk_edges(right, upper_j, lower_j))
+    result = _drop_collinear(merged, rejected)
     if steps is not None:
-        steps.append(("zusammengefügt", [], [_closed(result)]))
+        steps.append(("zusammengefügt", [], [_closed(result)], list(rejected)))
     return result
+
+
+def _walk_edges(chain, start, end):
+    edges = []
+    if len(chain) < 2 or start == end:
+        return edges
+    i = start
+    for _ in range(len(chain)):
+        if i == end:
+            break
+        nxt = (i + 1) % len(chain)
+        edges.append([chain[i], chain[nxt]])
+        i = nxt
+    return edges
 
 
 def _farther(anchor, current, candidate):
@@ -84,7 +101,7 @@ def _keeps_going(anchor, current, candidate, upward):
     return turn < 0 or (turn == 0 and _farther(anchor, current, candidate))
 
 
-def _tangent(left, right, upper, steps):
+def _tangent(left, right, upper, steps, rejected):
     n = len(left)
     m = len(right)
     if upper:
@@ -102,6 +119,7 @@ def _tangent(left, right, upper, steps):
                 label,
                 [left[i], right[j]],
                 [_closed(left), _closed(right), [left[i], right[j]]],
+                list(rejected),
             ))
 
     for _ in range((n + m) * 2 + 2):
@@ -130,7 +148,7 @@ def _tangent(left, right, upper, steps):
     return i, j
 
 
-def _drop_collinear(chain):
+def _drop_collinear(chain, rejected):
     pts = []
     for point in chain:
         if not pts or pts[-1] != point:
@@ -148,6 +166,9 @@ def _drop_collinear(chain):
         for i in range(n):
             if cross(pts[(i - 1) % n], pts[i], pts[(i + 1) % n]) == 0:
                 changed = True
+                if rejected is not None:
+                    rejected.append([pts[(i - 1) % n], pts[i]])
+                    rejected.append([pts[i], pts[(i + 1) % n]])
             else:
                 keep.append(pts[i])
         if len(keep) < 3:
