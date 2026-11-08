@@ -16,6 +16,17 @@ FILES = [
     "rand16k.txt",
     "rand32k.txt",
     "rand64k.txt",
+    "rand128k.txt",
+    "rand256k.txt",
+    "rand512k.txt",
+    "rand1M.txt",
+    "rand2M.txt",
+    "rand4M.txt",
+    "rand8M.txt",
+    "rand16M.txt",
+    "rand32M.txt",
+    "rand64M.txt",
+    "rand128M.txt",
     "circle1k.txt",
     "circle2k.txt",
     "circle4k.txt",
@@ -23,15 +34,37 @@ FILES = [
     "circle16k.txt",
     "circle32k.txt",
     "circle64k.txt",
+    "circle128k.txt",
+    "circle256k.txt",
+    "circle512k.txt",
+    "circle1M.txt",
+    "circle2M.txt",
+    "circle4M.txt",
+    "circle8M.txt",
+    "circle16M.txt",
+    "circle32M.txt",
+    "circle64M.txt",
+    "circle128M.txt",
 ]
 
 
-def hull_dir():
+def data_dirs():
     if getattr(sys, "frozen", False):
         base = sys._MEIPASS
-    else:
-        base = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(base, "data", "hull")
+        return [os.path.join(base, "data", "hull")]
+    base = os.path.dirname(os.path.abspath(__file__))
+    return [
+        os.path.join(base, "data", "hull"),
+        os.path.join(base, "data", "large"),
+    ]
+
+
+def find_data_file(name):
+    for folder in data_dirs():
+        path = os.path.join(folder, name)
+        if os.path.isfile(path):
+            return path
+    return None
 
 
 def read_points(filename):
@@ -50,7 +83,8 @@ def run_hull_and_print_time(filename, hull_fn):
     start = time.time()
     hull_fn(points)
     end = time.time()
-    print("data/hull/" + os.path.basename(filename) + ":", end - start, "s")
+    folder = os.path.basename(os.path.dirname(filename))
+    print("data/" + folder + "/" + os.path.basename(filename) + ":", end - start, "s")
 
 
 def demo_points():
@@ -88,9 +122,11 @@ def main():
 
     if mode == "1":
         print("Hülle:")
-        folder = hull_dir()
         for name in FILES:
-            run_hull_and_print_time(os.path.join(folder, name), hull_fn)
+            path = find_data_file(name)
+            if path is None:
+                continue
+            run_hull_and_print_time(path, hull_fn)
         try:
             input("Enter zum Schließen...")
         except EOFError:
