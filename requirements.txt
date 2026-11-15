@@ -1,5 +1,9 @@
-pygame
+pygame; python_version < "3.14"
+pygame-ce; python_version >= "3.14"
 pyinstaller
 
-# rbox und qhull gibt es nicht als pip-Paket. 
+# pygame-ce ist eine kompatible Variante von pygame (gleicher Import: import pygame).
+# Sie wird nur ab Python 3.14 benutzt, weil es pygame dafuer nicht gibt.
+
+# rbox und qhull gibt es nicht als pip-Paket.
 # Die Programme liegen in tools/qhull und werden von generate_hull_data.py verwendet.
