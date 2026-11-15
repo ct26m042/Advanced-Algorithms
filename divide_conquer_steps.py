@@ -1,6 +1,7 @@
-"""Divide & Conquer konvexe Hülle - instrumentierte Version für den visuellen Modus.
+"""
+Divide & Conquer konvexe Hülle - Version für den visuellen Modus.
 
-Wird nur von view.py benutzt, NICHT für Zeitmessungen.
+Wird nur von view.py benutzt, nicht für Zeitmessungen.
 Gleiche Logik wie divide_conquer.py, zeichnet aber jeden Schritt auf.
 
 Ein Schritt ist ein Tupel (text, hervorgehobene_punkte, linienzuege, verworfene_kanten).

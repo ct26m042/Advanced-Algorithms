@@ -22,13 +22,6 @@ FILES = [
     "rand256k.txt",
     "rand512k.txt",
     "rand1M.txt",
-    "rand2M.txt",
-    "rand4M.txt",
-    "rand8M.txt",
-    "rand16M.txt",
-    "rand32M.txt",
-    "rand64M.txt",
-    "rand128M.txt",
     "circle1k.txt",
     "circle2k.txt",
     "circle4k.txt",
@@ -40,13 +33,6 @@ FILES = [
     "circle256k.txt",
     "circle512k.txt",
     "circle1M.txt",
-    "circle2M.txt",
-    "circle4M.txt",
-    "circle8M.txt",
-    "circle16M.txt",
-    "circle32M.txt",
-    "circle64M.txt",
-    "circle128M.txt",
 ]
 
 
