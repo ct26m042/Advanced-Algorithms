@@ -4,7 +4,9 @@ import sys
 import time
 
 import andrew
+import andrew_steps
 import divide_conquer
+import divide_conquer_steps
 import view
 
 
@@ -113,11 +115,11 @@ def main():
 
     if algo == "1":
         hull_fn = andrew.hull
-        steps_fn = andrew.hull_steps
+        steps_fn = andrew_steps.hull_steps
         title = "Andrew"
     else:
         hull_fn = divide_conquer.hull
-        steps_fn = divide_conquer.hull_steps
+        steps_fn = divide_conquer_steps.hull_steps
         title = "Divide and Conquer"
 
     if mode == "1":

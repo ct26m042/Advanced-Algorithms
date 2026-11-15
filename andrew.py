@@ -1,46 +1,24 @@
-def cross(origin, a, b):
-    return (a[0] - origin[0]) * (b[1] - origin[1]) - (a[1] - origin[1]) * (b[0] - origin[0])
+"""Andrew's Algorithmus (Monotone Chain) - eigene Implementierung.
+
+Diese Funktion wird im Performance-Modus gemessen. Deshalb hier:
+keine Visualisierung, kein print, keine Schrittaufzeichnung.
+(Die Visualisierung nutzt andrew_steps.py.)
+
+Vertrag - genau das prüft test_hull.py:
+  Eingabe:  Liste von Punkten als (x, y)-Tupel. Die Liste darf NICHT verändert werden.
+  Ausgabe:  neue Liste mit den Eckpunkten der konvexen Hülle,
+            - gegen den Uhrzeigersinn (counter-clockwise),
+            - beginnend beim kleinsten Punkt (kleinstes x, bei Gleichstand kleinstes y),
+            - ohne Duplikate,
+            - ohne kollineare Punkte auf den Kanten (nur echte Ecken).
+  Sonderfälle: []           -> []
+               ein Punkt    -> [p]
+               alle Punkte auf einer Linie -> [kleinster Punkt, größter Punkt]
+
+Testen:
+  python -m unittest -v test_hull.TestAndrew
+"""
 
 
 def hull(points):
-    return _chain(points, None)
-
-
-def hull_steps(points):
-    steps = []
-    _chain(points, steps)
-    return steps
-
-
-def _chain(points, steps):
-    pts = sorted(set(points))
-    rejected = []
-    if steps is not None:
-        steps.append(("sortiert", [], [], []))
-    if len(pts) <= 1:
-        if steps is not None:
-            steps.append(("Hülle", list(pts), [], []))
-        return pts
-
-    lower = _side(pts, steps, "untere Kette", rejected)
-    upper = _side(reversed(pts), steps, "obere Kette", rejected)
-    result = lower[:-1] + upper[:-1]
-    if steps is not None:
-        closed = result + [result[0]] if len(result) > 1 else result
-        steps.append(("Hülle", [], [closed], list(rejected)))
-    return result
-
-
-def _side(points, steps, name, rejected):
-    chain = []
-    for point in points:
-        while len(chain) >= 2 and cross(chain[-2], chain[-1], point) <= 0:
-            dropped = chain[-1]
-            rejected.append([chain[-2], dropped])
-            chain.pop()
-            if steps is not None:
-                steps.append((name + ": verworfen", [dropped], [list(chain)], list(rejected)))
-        chain.append(point)
-        if steps is not None:
-            steps.append((name, [point], [list(chain)], list(rejected)))
-    return chain
+    raise NotImplementedError("Andrew's Algorithmus ist noch nicht implementiert (siehe andrew.py)")

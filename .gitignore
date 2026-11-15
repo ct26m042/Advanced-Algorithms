@@ -9,3 +9,4 @@ dist/
 *.spec
 
 data/large/
+test_hull.py
