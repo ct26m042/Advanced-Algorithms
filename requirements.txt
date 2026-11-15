@@ -1,2 +1,5 @@
 pygame
 pyinstaller
+
+# rbox und qhull gibt es nicht als pip-Paket. 
+# Die Programme liegen in tools/qhull und werden von generate_hull_data.py verwendet.

@@ -25,11 +25,19 @@ SIZES = [
 ]
 
 
+def find_rbox():
+    here = os.path.dirname(os.path.abspath(__file__))
+    bundled = os.path.join(here, 'tools', 'qhull', 'rbox.exe')
+    if os.path.isfile(bundled):
+        return bundled
+    return shutil.which('rbox')
+
+
 def main():
-    rbox = shutil.which('rbox')
+    rbox = find_rbox()
     if rbox is None:
         print('rbox wurde nicht gefunden.\n'
-              'Bitte Qhull installieren und rbox in den PATH aufnehmen.')
+              'Erwartet unter tools/qhull/rbox.exe.')
         raise SystemExit(1)
 
     for n, label in SIZES:
